@@ -12,8 +12,10 @@ import (
 )
 
 func TestParseRateLimitHeaders(t *testing.T) {
-	reTime := time.Now().Add(: http.Header{
-	"X-RateLimit-Limit":     []string{"5000"},
+	resetTime := time.Now().Add(time.Hour).Unix()
+	resp := &http.Response{
+		Header: http.Header{
+			"X-RateLimit-Limit":     []string{"5000"},
 			"X-RateLimit-Remaining": []string{"4999"},
 			"X-RateLimit-Used":      []string{"1"},
 			"X-RateLimit-Reset":     []string{strconv.FormatInt(resetTime, 10)},
@@ -45,9 +47,9 @@ func TestParseRateLimitHeaders_InvalidHeader(t *testing.T) {
 
 func TestIsRateLimited(t *testing.T) {
 	tests := []struct {
-		name     string
-		resp     *http.Response
-		want     bool
+		name string
+		resp *http.Response
+		want bool
 	}{
 		{"nil response", nil, false},
 		{"429 status", &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}, true},
