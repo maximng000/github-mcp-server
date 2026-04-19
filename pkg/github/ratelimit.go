@@ -69,11 +69,13 @@ func IsRateLimited(resp *http.Response) bool {
 }
 
 // WaitForRateLimit blocks until the rate limit resets or the context is cancelled.
+// A small buffer (2 seconds) is added to the wait duration to account for clock skew
+// between the local machine and GitHub's servers.
 func WaitForRateLimit(ctx context.Context, info *RateLimitInfo) error {
 	if info == nil {
 		return nil
 	}
-	waitDuration := time.Until(info.Reset)
+	waitDuration := time.Until(info.Reset) + 2*time.Second
 	if waitDuration <= 0 {
 		return nil
 	}
