@@ -62,6 +62,11 @@ func TestIsRateLimited(t *testing.T) {
 			Header:     http.Header{},
 		}, false},
 		{"200 ok", &http.Response{StatusCode: http.StatusOK, Header: http.Header{}}, false},
+		// Edge case: 403 with remaining > 0 should not be considered rate limited
+		{"403 with remaining > 0", &http.Response{
+			StatusCode: http.StatusForbidden,
+			Header:     http.Header{"X-RateLimit-Remaining": []string{"10"}},
+		}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
