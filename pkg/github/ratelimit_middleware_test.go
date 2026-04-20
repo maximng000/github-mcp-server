@@ -1,6 +1,7 @@
 package github
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -64,6 +65,8 @@ func TestRateLimitTransport_RoundTrip(t *testing.T) {
 
 		// Should still return the 429 to the caller
 		assert.Equal(t, http.StatusTooManyRequests, resp.StatusCode)
+		// Ensure the server was only called once (no automatic retry on 429)
+		assert.Equal(t, 1, callCount)
 	})
 
 	t.Run("forwards request headers", func(t *testing.T) {
