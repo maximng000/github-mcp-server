@@ -27,6 +27,9 @@ func TestBackoffDelay(t *testing.T) {
 	delay1 := BackoffDelay(1, cfg)
 	assert.Equal(t, 1*time.Second, delay1)
 
+	delay2 := BackoffDelay(2, cfg)
+	assert.Equal(t, 2*time.Second, delay2)
+
 	// Should be capped at MaxDelay
 	delayCapped := BackoffDelay(100, cfg)
 	assert.Equal(t, cfg.MaxDelay, delayCapped)
@@ -78,5 +81,6 @@ func TestDoWithBackoff_ExhaustsRetries(t *testing.T) {
 	resp, err := DoWithBackoff(context.Background(), cfg, fn)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusTooManyRequests, resp.StatusCode)
+	// Expect MaxRetries+1 total calls: 1 initial attempt + MaxRetries retries
 	assert.Equal(t, cfg.MaxRetries+1, calls)
 }
