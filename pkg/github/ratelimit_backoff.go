@@ -16,11 +16,13 @@ type BackoffConfig struct {
 }
 
 // DefaultBackoffConfig returns a BackoffConfig with sensible defaults.
+// Personal note: increased BaseDelay to 1s and MaxRetries to 7 to be more
+// conservative with GitHub's rate limits during heavy usage.
 func DefaultBackoffConfig() BackoffConfig {
 	return BackoffConfig{
-		MaxRetries: 5,
-		BaseDelay:  500 * time.Millisecond,
-		MaxDelay:   30 * time.Second,
+		MaxRetries: 7,
+		BaseDelay:  1 * time.Second,
+		MaxDelay:   60 * time.Second,
 		Multiplier: 2.0,
 	}
 }
